@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Debug APK
 on:
   push:
     branches: [ main ]
@@ -6,15 +6,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # تحديث إلى v4
+      - uses: actions/checkout@v4
+      
+      # إعداد جافا لضمان توافق أندرويد
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.0' # تحديد نسخة مستقرة لضمان التوافق
+      
       - run: flutter pub get
-      - run: flutter build apk --release --split-per-abi
+
+      # حل مشكلة تصريح الملفات (مهم جداً)
+      - name: Fix gradlew permissions
+        run: chmod +x android/gradlew
+
+      # بناء نسخة Debug لتجاوز مشاكل التوقيع
+      - run: flutter build apk --debug
+
       - name: Upload APK
-        uses: actions/upload-artifact@v4 # تحديث إلى v4 (هذا هو سبب الخطأ)
+        uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: build/app/outputs/flutter-apk/*.apk
+          name: student-app-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
