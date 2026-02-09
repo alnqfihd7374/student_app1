@@ -6,14 +6,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4 # تحديث إلى v4
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          flutter-version: '3.19.0' # تحديد نسخة مستقرة لضمان التوافق
       - run: flutter pub get
       - run: flutter build apk --release --split-per-abi
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # تحديث إلى v4 (هذا هو سبب الخطأ)
         with:
           name: release-apk
           path: build/app/outputs/flutter-apk/*.apk
